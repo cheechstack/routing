@@ -2,7 +2,7 @@
   "name": "cheechstack/routing",
   "description": "Router and route classes for the CheechStack framework.",
   "type": "library",
-  "version" : "0.1.0",
+  "version" : "1.0.0",
   "require": {
     "php" : ">=8.4",
     "symfony/http-foundation": "7.3"
