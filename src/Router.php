@@ -69,7 +69,7 @@ class Router
         $targetRoute->resolvePathParams($request->getPathInfo());
 
         // All Controller Methods should return a response object
-        $response = call_user_func($targetRoute->getCallable(), $request);
+        $response = call_user_func($targetRoute->getCallable(), $request, $targetRoute->getPathParameters());
 
         if ($response instanceof Response) {
             return $response;
