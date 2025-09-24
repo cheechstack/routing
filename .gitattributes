@@ -1,0 +1,10 @@
+
+# Exclude test and build files from the archive
+/tests              export-ignore
+/phpunit.xml        export-ignore
+/.github/           export-ignore
+/.gitignore         export-ignore
+/.gitattributes     export-ignore
+
+# Configure diff output for .php files
+*.php diff=php
