@@ -8,6 +8,7 @@ use Exception;
 
 class Route
 {
+
     public ?string $name {
         get { return $this->name; }
         set (string|null $val) { $this->name = $val; }
@@ -33,7 +34,7 @@ class Route
         $this->method = $method;
         $this->callback = $callback;
 
-        $this->parameters = $this->initPathParams();
+        $this->parameters = $this->initPathParams(); // fill the template array
     }
 
     /** Initializes the parameters array from the Route's path. The defined
@@ -60,16 +61,46 @@ class Route
         return $params;
     }
 
+    /** Assign the user-supplied path parameters to their corresponding keys
+     * in the Routes parameters.
+     *
+     * @param string $searchPath    The pathInfo() of the request object.
+     */
+    public function resolvePathParams(string $searchPath) : void
+    {
+        $searchTokens = explode("/", $searchPath);
+        $pathTokens = explode('/', $this->path);
+
+        for ($i = 0; $i < count($pathTokens); $i++) {
+            $pToken = $pathTokens[$i];
+            if (str_starts_with($pToken, ":")) {
+                $key = substr($pToken, 1);
+
+                $this->parameters[$key] = $searchTokens[$i];
+            }
+        }
+    }
+
     public function getPathParameters() : array {
         return $this->parameters;
     }
 
+    /** Get the Route's callback function
+     *
+     * @return \Closure
+     */
     public function getCallable() : \Closure
     {
         return $this->callback;
     }
 
-    public function matches(string $searchPath) : bool
+    /** Determine if a Route object matches a requested path and method.
+     *
+     * @param string $searchPath
+     * @param string $method
+     * @return bool
+     */
+    public function matches(string $searchPath, string $method) : bool
     {
         // Create the token lists
         $searchTokens = explode("/", $searchPath);
@@ -81,6 +112,11 @@ class Route
         // Remove the empty first elements
         if (empty($pathTokens[0])) {
             array_shift($pathTokens);
+        }
+
+        // Return false if the request methods don't match
+        if ($this->method !== $method) {
+            return false;
         }
 
         // Verify each token list is the same length

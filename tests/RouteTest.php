@@ -14,7 +14,7 @@ final class RouteTest extends TestCase {
         $this->assertEquals("/test/path", $route->path);
     }
 
-    public function testStoresParameters() : void
+    public function testStoresRouteParameterTemplateArray() : void
     {
         $route_w_o_params = new Route('/test/path', "GET", fn() => 'ok');
         $route_w_params = new Route('/test/:params/in/path', "GET", fn() => 'ok');
@@ -41,7 +41,7 @@ final class RouteTest extends TestCase {
 
         $route = new Route('/test/path', "GET", fn() => 'ok');
 
-        $this->assertTrue($route->matches($request->getPathInfo()));
+        $this->assertTrue($route->matches($request->getPathInfo(), $request->getMethod()));
     }
 
     public function testMatchesDynamicRoute() : void
@@ -52,6 +52,31 @@ final class RouteTest extends TestCase {
         );
 
         $route = new Route('/test/:path', "GET", fn() => 'ok');
-        $this->assertTrue($route->matches($request->getPathInfo()));
+        $this->assertTrue($route->matches($request->getPathInfo(), $request->getRealMethod()));
+    }
+
+    public function testIgnoresWrongMethod() : void
+    {
+        $request = Request::create(
+            "https://localhost:8080/test/path",
+            Request::METHOD_GET
+        );
+
+        $badRoute = new Route('/test/path', "POST", fn() => 'ok');
+
+        $this->assertFalse($badRoute->matches($request->getPathInfo(), $request->getRealMethod()));
+    }
+
+    public function testFillsRouteParameterArray() : void
+    {
+        $request = Request::create(
+            "https://localhost:8080/test/bar",
+            Request::METHOD_GET,
+        );
+        $route = new Route('/test/:foo', "GET", fn() => 'ok');
+        $route->resolvePathParams($request->getPathInfo());
+
+        $this->assertArrayHasKey('foo', $route->getPathParameters(), "Missing 'foo' parameter.");
+        $this->assertEquals("bar", $route->getPathParameters()['foo'], "Expected 'bar' value. Got " . $route->getPathParameters()['foo']);
     }
 }
