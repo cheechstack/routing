@@ -20,7 +20,7 @@ class Route
         get { return $this->method; }
     }
     protected array $parameters;
-    protected \Closure $callback;
+    protected \Closure|array $callback;
 
     /**
      * @param string $path
@@ -89,7 +89,7 @@ class Route
      *
      * @return \Closure
      */
-    public function getCallable() : \Closure
+    public function getCallable() : \Closure|array
     {
         return $this->callback;
     }
