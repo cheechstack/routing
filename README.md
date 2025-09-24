@@ -174,9 +174,6 @@ $route = new Route('/foo', "GET", fn(Request $request) => $request->get('bar'));
 
 # Changelog
 
-## 1.0.1
+## 1.0.0
 - Better (more) documentation.
 - Added support for accessing path parameters directly from callbacks.
-
-## 1.0.0
-- Full release!
