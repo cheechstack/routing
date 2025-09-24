@@ -87,7 +87,7 @@ class Route
 
     /** Get the Route's callback function
      *
-     * @return \Closure
+     * @return \Closure|array
      */
     public function getCallable() : \Closure|array
     {
